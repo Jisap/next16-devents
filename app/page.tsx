@@ -1,7 +1,7 @@
 import EventCard from '@/components/EventCard'
 import ExploreBtn from '@/components/ExploreBtn'
 import React from 'react'
-import { events } from './lib/constants'
+import { events } from '@/lib/constants'
 
 // const events = [
 //   { image: '/images/event1.png', title: 'Event 1', slug: 'event-1', location: 'Location 1', date: 'Date 1', time: 'Time 1' },

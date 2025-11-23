@@ -1,7 +1,7 @@
 import { Schema, model, models, Document } from 'mongoose';
 
 // TypeScript interface for Event document
-export interface IEvent extends Document {
+export interface IEvent extends Document { // Cualquier instancia de Event hereda todos los métodos de un Document de mongoose
   title: string;
   slug: string;
   description: string;

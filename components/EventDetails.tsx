@@ -50,53 +50,61 @@ const EventTags = ({ tags }: { tags: string[] }) => (
 
 // Componente principal que renderiza la página de detalles de un evento.
 // Es un Server Component asíncrono, lo que permite obtener datos directamente en el servidor.
+
 const EventDetails = async ({ params }: { params: Promise<string> }) => {
-  'use cache'                // Directiva experimental para cacheo.
-  cacheLife('hours');        // Configura el tiempo de vida del cache.
-  const slug = await params; // Obtiene el 'slug' del evento desde los parámetros de la URL.
+  'use cache'                                                              // Directiva experimental para cacheo.
+  cacheLife('hours');                                                      // Configura el tiempo de vida del cache.
+  const slug = await params;                                               // Obtiene el 'slug' del evento desde los parámetros de la URL.
 
   let event;
   try {
-    // Realiza una llamada a la API interna para obtener los detalles del evento.
-    // `next: { revalidate: 60 }` implementa revalidación incremental (ISR) cada 60 segundos.
-    const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
-      next: { revalidate: 60 }
+
+    const request = await fetch(`${BASE_URL}/api/events/${slug}`, {        // Realiza una llamada a la API interna para obtener los detalles del evento
+      next: { revalidate: 60 }                                             // `next: { revalidate: 60 }` implementa revalidación incremental (ISR) cada 60 segundos.
     });
 
-    // Si la respuesta no es exitosa (ej. error 500), maneja el error.
-    if (!request.ok) {
+
+    if (!request.ok) {                                                     // Si la respuesta no es exitosa (ej. error 500), maneja el error.
       if (request.status === 404) {
         return notFound();
       }
       throw new Error(`Failed to fetch event: ${request.statusText}`);
     }
 
-    // Parsea la respuesta JSON y extrae el objeto del evento.
-    const response = await request.json();
+
+    const response = await request.json();                                 // Parsea la respuesta JSON y extrae el objeto del evento.
     event = response.event;
 
-    // Si el evento no se encuentra en la respuesta, muestra la página 404.
-    if (!event) {
+
+    if (!event) {                                                          // Si el evento no se encuentra en la respuesta, muestra la página 404.
       return notFound();
     }
-  } catch (error) {
-    // Captura cualquier error durante el fetch (ej. problema de red) y muestra la página 404.
+  } catch (error) {                                                        // Captura cualquier error durante el fetch (ej. problema de red) y muestra la página 404.
     console.error('Error fetching event:', error);
     return notFound();
   }
 
-  // Desestructura las propiedades del evento para usarlas fácilmente en el TSX.
-  const { description, image, overview, date, time, location, mode, agenda, audience, tags, organizer } = event;
 
-  // Si no hay descripción, se asume que el evento no es válido y se muestra 404.
-  if (!description) return notFound();
+  const {                                                                  // Desestructura las propiedades del evento para usarlas fácilmente en el TSX.
+    description,
+    image,
+    overview,
+    date,
+    time,
+    location,
+    mode,
+    agenda,
+    audience,
+    tags,
+    organizer
+  } = event;
 
-  // Variable de ejemplo para el número de reservas.
-  const bookings = 10;
 
-  // Llama a la Server Action para obtener una lista de eventos similares.
-  // Esta función se ejecuta en el servidor y consulta directamente la base de datos.
-  const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
+  if (!description) return notFound();                                      // Si no hay descripción, se asume que el evento no es válido y se muestra 404.
+
+  const bookings = 10;                                                      // Variable de ejemplo para el número de reservas.
+
+  const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);       // Llama a la Server Action para obtener una lista de eventos similares. Esta función se ejecuta en el servidor y consulta directamente la base de datos.
 
   return (
     <section id="event">

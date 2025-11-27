@@ -164,7 +164,10 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
             )}
 
             {/* Renderiza el Client Component 'BookEvent' que maneja la lógica de reserva en el cliente. */}
-            <BookEvent eventId={event._id} slug={event.slug} />
+            <BookEvent
+              eventId={event._id}
+              slug={event.slug}
+            />
           </div>
         </aside>
       </div>
